@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChurnGuard — AI Customer Churn Prediction</title>
+  <meta name="description" content="Predict telecom customer churn with AI-powered analytics, real-time drift monitoring, and intelligent alerts.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <!-- ======== HEADER ======== -->
+  <header id="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-name">ChurnGuard</h1>
+          <p class="brand-tagline">AI-Powered Churn Prediction</p>
+        </div>
+      </div>
+      <div class="header-status">
+        <div class="status-badge" id="health-badge">
+          <span class="status-dot"></span>
+          <span class="status-text">Checking…</span>
+        </div>
+        <div class="model-badge" id="model-badge">Model: —</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ======== MAIN CONTENT ======== -->
+  <main>
+    <div class="container">
+
+      <!-- ── Prediction ── -->
+      <section class="predict-section">
+        <div class="predict-grid">
+
+          <!-- FORM CARD -->
+          <div class="card form-card" style="--delay: 0.05s">
+            <div class="card-header">
+              <h2>Customer Data</h2>
+              <div class="quick-fill">
+                <button type="button" class="pill-btn" onclick="fillProfile('low')">Low Risk</button>
+                <button type="button" class="pill-btn" onclick="fillProfile('high')">High Risk</button>
+              </div>
+            </div>
+
+            <form id="predict-form">
+              <!-- Personal Info -->
+              <div class="form-section">
+                <h3 class="section-title">Personal Information</h3>
+                <div class="form-grid cols-4">
+                  <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select id="gender" name="gender" required>
+                      <option value="Female">Female</option>
+                      <option value="Male">Male</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="SeniorCitizen">Senior Citizen</label>
+                    <select id="SeniorCitizen" name="SeniorCitizen" required>
+                      <option value="0">No</option>
+                      <option value="1">Yes</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="Partner">Partner</label>
+                    <select id="Partner" name="Partner" required>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="Dependents">Dependents</label>
+                    <select id="Dependents" name="Dependents" required>
+                      <option value="Yes">Yes</option>
+                      <option value="No" selected>No</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Account Details -->
+              <div class="form-section">
+                <h3 class="section-title">Account Details</h3>
+                <div class="form-grid cols-2">
+                  <div class="form-group">
+                    <label for="tenure">Tenure (months)</label>
+                    <input type="number" id="tenure" name="tenure" min="0" max="120" value="12" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="Contract">Contract</label>
+                    <select id="Contract" name="Contract" required>
+                      <option value="Month-to-month">Month-to-month</option>
+                      <option value="One year">One year</option>
+                      <option value="Two year">Two year</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="PaperlessBilling">Paperless Billing</label>
+                    <select id="PaperlessBilling" name="PaperlessBilling" required>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="PaymentMethod">Payment Method</label>
+                    <select id="PaymentMethod" name="PaymentMethod" required>
+                      <option value="Electronic check">Electronic check</option>
+                      <option value="Mailed check">Mailed check</option>
+                      <option value="Bank transfer (automatic)">Bank transfer (auto)</option>
+                      <option value="Credit card (automatic)">Credit card (auto)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Services -->
+              <div class="form-section">
+                <h3 class="section-title">Services</h3>
+                <div class="form-grid cols-3">
+                  <div class="form-group">
+                    <label for="PhoneService">Phone Service</label>
+                    <select id="PhoneService" name="PhoneService" required>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="MultipleLines">Multiple Lines</label>
+                    <select id="MultipleLines" name="MultipleLines" required>
+                      <option value="Yes">Yes</option>
+                      <option value="No" selected>No</option>
+                      <option value="No phone service">No phone service</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="InternetService">Internet Service</label>
+                    <select id="InternetService" name="InternetService" required>
+                      <option value="DSL">DSL</option>
+                      <option value="Fiber optic">Fiber optic</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="OnlineSecurity">Online Security</label>
+                    <select id="OnlineSecurity" name="OnlineSecurity" required>
+                      <option value="Yes">Yes</option>
+                      <option value="No" selected>No</option>
+                      <option value="No internet service">No internet service</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="OnlineBackup">Online Backup</label>
+                    <select id="OnlineBackup" name="OnlineBackup" required>
+                      <option value="Yes">Yes</option>
+                      <option value="No" selected>No</option>
+                      <option value="No internet service">No internet service</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="DeviceProtection">Device Protection</label>
+                    <select id="DeviceProtection" name="DeviceProtection" required>
+                      <option value="Yes">Yes</option>
+                      <option value="No" selected>No</option>
+                      <option value="No internet service">No internet service</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="TechSupport">Tech Support</label>
+                    <select id="TechSupport" name="TechSupport" required>
+                      <option value="Yes">Yes</option>
+                      <option value="No" selected>No</option>
+                      <option value="No internet service">No internet service</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="StreamingTV">Streaming TV</label>
+                    <select id="StreamingTV" name="StreamingTV" required>
+                      <option value="Yes">Yes</option>
+                      <option value="No" selected>No</option>
+                      <option value="No internet service">No internet service</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="StreamingMovies">Streaming Movies</label>
+                    <select id="StreamingMovies" name="StreamingMovies" required>
+                      <option value="Yes">Yes</option>
+                      <option value="No" selected>No</option>
+                      <option value="No internet service">No internet service</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Charges -->
+              <div class="form-section">
+                <h3 class="section-title">Charges</h3>
+                <div class="form-grid cols-2">
+                  <div class="form-group">
+                    <label for="MonthlyCharges">Monthly Charges ($)</label>
+                    <input type="number" id="MonthlyCharges" name="MonthlyCharges" min="0" step="0.01" value="70.00" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="TotalCharges">Total Charges ($)</label>
+                    <input type="number" id="TotalCharges" name="TotalCharges" min="0" step="0.01" value="840.00" required>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Actions -->
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary" id="predict-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                  </svg>
+                  Predict Churn
+                </button>
+                <button type="reset" class="btn btn-ghost" id="clear-btn">Clear Form</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- RESULT CARD -->
+          <div class="card result-card" id="result-card" style="--delay: 0.15s">
+            <div class="card-header">
+              <h2>Prediction Result</h2>
+            </div>
+
+            <!-- Placeholder (shown initially) -->
+            <div id="result-placeholder" class="result-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="52" height="52" opacity="0.25">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6l4 2"/>
+              </svg>
+              <p>Enter customer data and click<br><strong>Predict Churn</strong> to see results</p>
+            </div>
+
+            <!-- Actual result (hidden initially) -->
+            <div id="result-content" class="result-content hidden">
+              <div class="gauge-container">
+                <svg viewBox="0 0 160 160" class="gauge-svg">
+                  <circle class="gauge-track" cx="80" cy="80" r="65" fill="none"
+                    stroke="rgba(255,255,255,0.06)" stroke-width="10"
+                    stroke-dasharray="306.31 408.41"
+                    transform="rotate(135 80 80)" stroke-linecap="round"/>
+                  <circle id="gauge-fill" class="gauge-fill" cx="80" cy="80" r="65" fill="none"
+                    stroke="var(--accent)" stroke-width="10"
+                    stroke-dasharray="306.31 408.41" stroke-dashoffset="306.31"
+                    transform="rotate(135 80 80)" stroke-linecap="round"/>
+                  <text id="gauge-value" x="80" y="74" text-anchor="middle"
+                    class="gauge-value-text">0%</text>
+                  <text x="80" y="94" text-anchor="middle"
+                    class="gauge-label-text">churn probability</text>
+                </svg>
+              </div>
+
+              <div id="verdict" class="verdict"></div>
+
+              <div class="risk-badge-container">
+                <span id="risk-badge" class="risk-badge">—</span>
+              </div>
+
+              <div class="result-details">
+                <div class="detail-row">
+                  <span class="detail-label">Probability</span>
+                  <span id="detail-prob" class="detail-value">—</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Decision Threshold</span>
+                  <span id="detail-threshold" class="detail-value">—</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Model Version</span>
+                  <span id="detail-model" class="detail-value">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ── Operational Metrics ── -->
+      <section class="dashboard-section">
+        <div class="section-header">
+          <h2>Operational Dashboard</h2>
+          <button class="btn btn-sm btn-ghost" id="refresh-metrics-btn" onclick="loadMetrics()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
+              <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+            </svg>
+            Refresh
+          </button>
+        </div>
+        <div class="metrics-grid" id="metrics-grid">
+          <div class="metric-card" style="--delay: 0.25s">
+            <span class="metric-icon">📊</span>
+            <span class="metric-value" id="m-total">—</span>
+            <span class="metric-label">Total Requests</span>
+          </div>
+          <div class="metric-card" style="--delay: 0.30s">
+            <span class="metric-icon">⚠️</span>
+            <span class="metric-value" id="m-errors">—</span>
+            <span class="metric-label">Error Rate</span>
+          </div>
+          <div class="metric-card" style="--delay: 0.35s">
+            <span class="metric-icon">⚡</span>
+            <span class="metric-value" id="m-latency">—</span>
+            <span class="metric-label">Avg Latency</span>
+          </div>
+          <div class="metric-card" style="--delay: 0.40s">
+            <span class="metric-icon">🔥</span>
+            <span class="metric-value" id="m-p95">—</span>
+            <span class="metric-label">P95 Latency</span>
+          </div>
+          <div class="metric-card" style="--delay: 0.45s">
+            <span class="metric-icon">🎯</span>
+            <span class="metric-value" id="m-churn-rate">—</span>
+            <span class="metric-label">Churn Rate</span>
+          </div>
+          <div class="metric-card" style="--delay: 0.50s">
+            <span class="metric-icon">📈</span>
+            <span class="metric-value" id="m-avg-prob">—</span>
+            <span class="metric-label">Avg Probability</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Drift Monitoring ── -->
+      <section class="dashboard-section">
+        <div class="section-header">
+          <h2>Data Drift Monitor</h2>
+          <button class="btn btn-sm btn-ghost" id="check-drift-btn" onclick="loadDrift()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/>
+              <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>
+            </svg>
+            Check Drift
+          </button>
+        </div>
+        <div id="drift-content" class="drift-content">
+          <div class="drift-placeholder">
+            <p>Click <strong>Check Drift</strong> to compare live feature distributions against the training baseline.</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Toast container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>
